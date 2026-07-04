@@ -8,7 +8,7 @@ import ArticleBottomLayout from "@layouts/ArticleBottomLayout.astro"
 
 // Create the static projects pages
 export async function getStaticPaths() {
-	const projects = await getCollection("projects")
+	const projects = (await getCollection("projects")).filter((entry) => !entry.data.draft)
 	return projects.map((project) => ({
 		params: { slug: project.slug },
 		props: project,
