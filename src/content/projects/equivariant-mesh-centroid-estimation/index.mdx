@@ -16,11 +16,11 @@ repoUrl: https://github.com/jonathantybirk/equivariant-mesh-centroid-estimation
     import CentroidDemo from "@components/demos/CentroidDemo"
     <CentroidDemo client:visible /> */}
 
-*Bachelor project (course 02466, Project Work — BSc Artificial Intelligence and Data, DTU, Spring 2025), with Benjamin Banks and Jonathan Tybirk.*
+*Bachelor project (course 02466, Project Work, BSc Artificial Intelligence and Data, DTU, Spring 2025), with Benjamin Banks and Jonathan Tybirk.*
 
 ## The problem
 
-A LiDAR scanner sees an object only from the outside, and only from some angles — you get a sparse, noisy point cloud, not the full surface. We asked: from such a point cloud alone, can a network recover the **centroid** of the underlying mesh? The centroid is a physically meaningful quantity: it moves and rotates exactly with the object. That makes the task a natural test case for **SE(3)-equivariant** networks — architectures that are mathematically guaranteed to respect 3D rotation and translation symmetry, instead of having to learn it from data.
+A LiDAR scanner sees an object only from the outside, and only from some angles: you get a sparse, noisy point cloud, not the full surface. We asked: from such a point cloud alone, can a network recover the **centroid** of the underlying mesh? The centroid is a physically meaningful quantity: it moves and rotates exactly with the object. That makes the task a natural test case for **SE(3)-equivariant** networks, architectures that are mathematically guaranteed to respect 3D rotation and translation symmetry, instead of having to learn it from data.
 
 ## Method
 
@@ -31,14 +31,14 @@ We built a strictly rotation- and translation-equivariant message-passing graph 
 ![Prediction error and equivariance error per model, and inference time comparison](/projects/equivariant-mesh-centroid-estimation/performance_equivariance_comparison.png)
 
 - The **equivariant GNN achieved the best prediction error (0.0703 L2)** while being *exactly* equivariant by construction (zero equivariance error).
-- The **augmented baseline came very close (0.0706)** but retained a small residual equivariance error (0.0027) — it only approximates the symmetry.
+- The **augmented baseline came very close (0.0706)** but retained a small residual equivariance error (0.0027); it only approximates the symmetry.
 - The price of exact symmetry: the EGNN was about **6× slower at inference** (≈249 ms vs ≈41 ms per batch) due to the sparse Clebsch–Gordan tensor contractions.
 
 ![Training and validation L2 distance curves and generalization gap](/projects/equivariant-mesh-centroid-estimation/training_validation_analysis.png)
 
-The training dynamics tell the more interesting story: the plain GNN's generalization gap grows steadily over training, while both the equivariant model and the augmented model keep it near zero — but the equivariant model gets there by architecture rather than by data.
+The training dynamics tell the more interesting story: the plain GNN's generalization gap grows steadily over training, while both the equivariant model and the augmented model keep it near zero, but the equivariant model gets there by architecture rather than by data.
 
-**Takeaway:** when plenty of augmented data is available, architectural equivariance is not strictly required for accuracy — but it buys exact symmetry, more stable training, and data-efficiency that matter in low-data or safety-critical settings.
+**Takeaway:** when plenty of augmented data is available, architectural equivariance is not strictly required for accuracy, but it buys exact symmetry, more stable training, and data-efficiency that matter in low-data or safety-critical settings.
 
 ## Links
 

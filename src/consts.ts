@@ -3,7 +3,7 @@ import type { Site, Page, Links, Socials } from "@types"
 // Global
 export const SITE: Site = {
   TITLE: "Lucas Rieneck Gottfried Pedersen",
-  DESCRIPTION: "Portfolio of Lucas Rieneck Gottfried Pedersen — AI engineer working on applied ML, agentic systems and reinforcement learning.",
+  DESCRIPTION: "Portfolio of Lucas Rieneck Gottfried Pedersen, AI engineer working on applied ML, agentic systems and reinforcement learning.",
   AUTHOR: "Lucas Rieneck Gottfried Pedersen",
 }
 
