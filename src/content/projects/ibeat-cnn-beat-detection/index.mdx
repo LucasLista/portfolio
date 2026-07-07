@@ -1,0 +1,35 @@
+---
+title: "iBeat: CNN Beat Detection in Short Music Snippets"
+summary: "First-semester 3-week project (DTU): my first hands-on work with CNNs, comparing waveform- and spectrogram-based convolutional networks for detecting beats in 10-second music clips."
+date: "Jan 19 2024"
+tags:
+- Convolutional Neural Networks
+- Audio
+- Signal Processing
+- PyTorch
+cover: /projects/ibeat-cnn-beat-detection/waveform_vs_spectrogram.png
+repoUrl: https://github.com/bforbanks/iBeat
+---
+
+*3-week project (Introduction to Intelligent Systems) in the first semester of the BSc Artificial Intelligence and Data at DTU, January 2024, with Benjamin Banks and David Svane. This was my first hands-on project with convolutional neural networks.*
+
+## The problem
+
+Detecting the beat is the first step towards syncing visuals to music live. Classic beat-tracking relies on hand-built expert systems that are either too simple for varied music or slow to develop. We asked whether a CNN could just learn the patterns itself, and whether the input representation matters: raw waveform, or spectrogram?
+
+## Method
+
+We built two convolutional networks over 10-second snippets sampled from the "Now That's What I Call Music!" collection, with beat annotations from Librosa. Both used four convolutional layers with max-pooling and a final linear layer mapping to 430 time bins (23.3 ms each), predicting beat or no-beat per bin. The **waveform model (WM)** took the downsampled raw signal; the **spectrogram model (SM)** took a short-time Fourier transform. We tuned each with a hyperparameter grid search and evaluated on held-out snippets using F-measure (25 ms tolerance) and Kullback-Leibler divergence of the beat-error distribution.
+
+## Results
+
+![Waveform and spectrogram models on the same song. Green lines are the Librosa ground-truth beats, red lines are the model's predictions.](/projects/ibeat-cnn-beat-detection/waveform_vs_spectrogram.png)
+
+The **spectrogram model significantly outperformed the waveform model** (statistically at the 5% level): F-measure 61% vs 49%, and KLd 1.71 vs 1.11. Splitting frequencies into visible bands seems to surface features that make beats easier to place, much as they are easier to spot by eye in a spectrogram. The main shared failure mode was treating any sudden loud sound as a beat, since plain convolutions capture local patterns but not the cyclical spacing of beats. An LSTM on top is the natural next step.
+
+**Takeaway:** for beat-tracking CNNs, transforming audio to a spectrogram first is a meaningful accuracy win over feeding in the raw waveform.
+
+## Links
+
+- [Code on GitHub](https://github.com/bforbanks/iBeat)
+- [Full report (PDF)](/projects/ibeat-cnn-beat-detection/report.pdf)
