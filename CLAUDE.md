@@ -15,6 +15,14 @@ Personal portfolio site. Astro 4 + the
   serves `./dist`), not classic Pages. `output: "static"`, no server adapter.
 - CI: every push to `main` triggers a Cloudflare build. The result is
   reported as a GitHub check-run ("Workers Builds: portfolio").
+- After every push to `main`, poll that check-run until it finishes and
+  confirm success (do not leave a deploy unverified):
+  `gh api repos/LucasLista/portfolio/commits/<sha>/check-runs`.
+
+## Writing style
+
+- No em-dashes (—) anywhere in site content, code comments, or docs. Use a
+  comma, colon, semicolon, or period instead.
 
 ## Content model (src/content/)
 

@@ -3,7 +3,7 @@ import type { Site, Page, Links, Socials } from "@types"
 // Global
 export const SITE: Site = {
   TITLE: "Lucas Rieneck Gottfried Pedersen",
-  DESCRIPTION: "Portfolio of Lucas Rieneck Gottfried Pedersen, AI engineer working on applied ML, agentic systems and reinforcement learning.",
+  DESCRIPTION: "Portfolio of Lucas Rieneck Gottfried Pedersen, working on robotics and world models, agentic systems, and physics-inspired (equivariant GNN) machine learning.",
   AUTHOR: "Lucas Rieneck Gottfried Pedersen",
 }
 
@@ -25,29 +25,19 @@ export const PROJECTS: Page = {
   DESCRIPTION: "Recent projects I have worked on.",
 }
 
-// Search Page
-export const SEARCH: Page = {
-  TITLE: "Search",
-  DESCRIPTION: "Search all posts and projects by keyword.",
-}
-
 // Links
 export const LINKS: Links = [
-  { 
-    TEXT: "Home", 
-    HREF: "/", 
+  {
+    TEXT: "Home",
+    HREF: "/",
   },
-  { 
-    TEXT: "Work", 
-    HREF: "/work", 
+  {
+    TEXT: "Work",
+    HREF: "/work",
   },
-  { 
-    TEXT: "Blog", 
-    HREF: "/blog", 
-  },
-  { 
-    TEXT: "Projects", 
-    HREF: "/projects", 
+  {
+    TEXT: "Projects",
+    HREF: "/projects",
   },
 ]
 
