@@ -3,7 +3,7 @@ import type { Site, Page, Links, Socials } from "@types"
 // Global
 export const SITE: Site = {
   TITLE: "Lucas Rieneck Gottfried Pedersen",
-  DESCRIPTION: "Portfolio of Lucas Rieneck Gottfried Pedersen, working on robotics and world models, agentic systems, and physics-inspired (equivariant GNN) machine learning.",
+  DESCRIPTION: "Portfolio of Lucas Rieneck Gottfried Pedersen, working on world models, agentic systems, and physics-inspired machine learning.",
   AUTHOR: "Lucas Rieneck Gottfried Pedersen",
 }
 

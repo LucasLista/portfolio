@@ -18,7 +18,7 @@ export type Update = {
 export const UPDATES: Update[] = [
   {
     date: "Mar 27 2026",
-    body: 'Just attended the Incommodities Case Crunch 2026, where I experimented with the foundation time-series model Chronos-2 on a simulated market for forecasting electricity prices. This led to a catastrophic failure one round, <a href="https://www.linkedin.com/posts/lucasrgpedersen_machinelearning-timeseries-energymarkets-ugcPost-7450525538059915264-7dgw/" target="_blank" rel="noopener">see the LinkedIn post for more!</a>',
+    body: 'Just attended the Incommodities Case Crunch 2026, where I experimented with the foundation time-series model Chronos-2 on a simulated market for forecasting electricity prices. This led to impressive performance overall, but a catastrophic failure one round, <a href="https://www.linkedin.com/posts/lucasrgpedersen_machinelearning-timeseries-energymarkets-ugcPost-7450525538059915264-7dgw/" target="_blank" rel="noopener">see the LinkedIn post for more!</a>',
   },
   {
     date: "Aug 15 2025",
