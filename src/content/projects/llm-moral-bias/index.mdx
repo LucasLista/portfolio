@@ -1,0 +1,40 @@
+---
+title: "Examination of Prompt-Induced Biases in Moral Evaluations by GPT-4o"
+summary: "Project in Statistical Evaluation (DTU): testing whether the sentiment and perspective of a prompt sway GPT-4o's moral judgments of interpersonal conflicts, using a designed experiment and ART ANOVA."
+date: "Jun 24 2024"
+tags:
+- Large Language Models
+- Bias
+- Statistical Evaluation
+- ANOVA
+- Python
+cover: /projects/llm-moral-bias/scores_by_sentiment_perspective.png
+repoUrl: https://github.com/bforbanks/llm-bias-project
+---
+
+*Project in Statistical Evaluation, in the BSc Artificial Intelligence and Data at DTU, Spring 2024, with Benjamin Banks, Christoffer Grauballe and Jonathan Tybirk.*
+
+## The question
+
+People increasingly ask LLMs for advice, including on personal conflicts, treating them as neutral third parties. But do they stay neutral? We asked whether the **sentiment** a user expresses and the **perspective** they write from change how GPT-4o morally judges the same story: does the model just tell you what you want to hear?
+
+## Method
+
+We took 99 interpersonal conflicts from Reddit's r/AmItheAsshole and asked GPT-4o to score the narrator's moral standing from 1 to 10. For each post we varied two factors: **perspective** (the event framed as the user's own vs a third party's) and **sentiment** (the prompt leaning positive, neutral, or negative about the actions). That gives six framings per post, 594 prompts in total, each run in a clean session at temperature 0.
+
+Because the scores were ordinal and far from normal, we used an **Aligned Ranks Transformation two-way repeated-measures ANOVA (ART ANOVA)** for the main effects, with Bonferroni-corrected pairwise t-tests for the follow-ups.
+
+## Results
+
+![GPT-4o morality scores by perspective (first vs third person) and sentiment (positive, neutral, negative). Negative-sentiment prompts, in green, pull the scores down.](/projects/llm-moral-bias/scores_by_sentiment_perspective.png)
+
+- **Sentiment matters a lot** (p < 2.2e-16). Negative-sentiment prompts produced significantly lower morality scores, even though the sentiment adds no new facts about what happened. The model shifts its verdict with the framing.
+- **Perspective matters** (p ≈ 1.9e-11), but mainly through an **interaction with sentiment**: only when a prompt carried sentiment did first-person framing get judged more harshly than third-person. With neutral prompts, perspective barely moved the score.
+- Curiously, we found a mild **reverse-sycophant effect**: expressing confidence that you were in the right did not buy a higher score. One reading is that the model discounts a self-narrator who shows an explicit bias.
+
+**Takeaway:** GPT-4o's moral judgment can be swayed by how a prompt is framed, especially negative sentiment, which is worth keeping in mind whenever an LLM is used as a judge in sensitive contexts. We are careful not to over-generalize from one dataset and one model.
+
+## Links
+
+- [Code and data on GitHub](https://github.com/bforbanks/llm-bias-project)
+- [Full report (PDF)](/projects/llm-moral-bias/report.pdf)
