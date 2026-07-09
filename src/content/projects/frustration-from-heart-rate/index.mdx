@@ -1,0 +1,42 @@
+---
+title: "Can Heart Rate Predict Frustration? Evaluating Predictive Models"
+summary: "Individual assignment (DTU, 02445): a group-aware model comparison testing whether heart-rate summary statistics can predict self-reported frustration, and finding, honestly, that they cannot."
+date: "Jun 21 2024"
+tags:
+- Machine Learning
+- Statistical Evaluation
+- Cross-Validation
+- Model Comparison
+- Python
+cover: /projects/frustration-from-heart-rate/features_vs_frustration.png
+repoUrl: https://github.com/LucasLista/02445---Task-2
+---
+
+*Individual assignment for Project in Statistical Evaluation (course 02445), in the BSc Artificial Intelligence and Data at DTU, Spring 2024.*
+
+## The question
+
+In an experiment, participants solved timed puzzles in pairs while their heart rate was recorded, and rated their own frustration afterwards. Can you predict that self-reported frustration from the heart-rate signal alone? I tested this on the EmoPairCompete dataset (Das et al., 2024), using six summary statistics of each 5-minute heart-rate window (mean, median, std, min, max, area under curve) to predict a frustration score from 0 to 10.
+
+## Method
+
+I compared five models against a mean baseline: a neural network, random forest, k-nearest neighbours, ridge regression, and (unusually for a regression target) logistic regression. Performance was measured by MSE under **8-fold cross-validation with group-aware splitting**: because the same people, cohorts, and puzzle rounds recur through the data, folds never share an individual, cohort, or round between train and test, so the estimate reflects predicting a *new* person's experiment rather than memorising this one.
+
+For the statistics I used a **Friedman test** to check whether the models differed, followed by Bonferroni-corrected post-hoc comparisons (a normal paired t-test and the variability-aware "Setup II" from the course), with the significance level adjusted to 0.0016 across 31 tests.
+
+## Results
+
+![Each of the six heart-rate features plotted against self-reported frustration; no clear relationship is visible in any panel.](/projects/frustration-from-heart-rate/features_vs_frustration.png)
+
+The scatterplots above already hint at the answer: no feature shows a visible relationship with frustration. The models bear it out.
+
+- The Friedman test was significant (statistic 25.15, p = 0.00013), so the models do differ from each other, but **none beat the baseline significantly**. Mean errors: baseline 4.48, KNN 4.43, RF 4.82, ANN 7.13, logistic 6.55, ridge 20.19.
+- Only KNN edged below the mean baseline (4.43 vs 4.48), and not significantly. Ridge regression was wildly the worst, an interesting failure: it extrapolated far outside the training range on one fold and blew up, while the other models stayed bounded by the actual frustration scale.
+- The variability-aware Setup II comparisons were all insignificant, so I could not even confirm the ranking would hold on different training data.
+
+**Takeaway:** heart-rate summary statistics carry little to no usable signal about self-reported frustration in this experimental setup. A useful reminder that a careful, group-aware evaluation is exactly what lets you report a clean negative result with confidence, rather than an inflated one from leaked structure.
+
+## Links
+
+- [Code on GitHub](https://github.com/LucasLista/02445---Task-2)
+- [Full report (PDF)](/projects/frustration-from-heart-rate/report.pdf)
