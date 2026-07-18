@@ -1,8 +1,9 @@
 import { createSignal, For, Show, onMount } from "solid-js"
 import { CANDIDATES } from "@data/teamCandidates"
 
-const POINTS = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1]
-const STORAGE_KEY = "team-vote-submitted"
+// F1 scoring: points for positions 1 through 10, nothing below that.
+const POINTS = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1, 0, 0, 0, 0]
+const STORAGE_KEY = "team-vote-submitted-v2"
 
 type CandidateTotal = {
   id: number
@@ -15,22 +16,6 @@ type Results = {
   needed: number
   totals?: CandidateTotal[]
   winnerId?: number
-}
-
-function teams(id: number) {
-  const c = CANDIDATES.find((c) => c.id === id)!
-  return c
-}
-
-function TeamsLine(props: { id: number }) {
-  const c = teams(props.id)
-  return (
-    <div class="flex flex-col gap-0.5 text-sm">
-      <span>{c.teamA.join(", ")}</span>
-      <span class="opacity-50 text-xs">vs</span>
-      <span>{c.teamB.join(", ")}</span>
-    </div>
-  )
 }
 
 function shuffled<T>(arr: T[]): T[] {
@@ -49,6 +34,41 @@ export default function TeamVote() {
   const [busy, setBusy] = createSignal(false)
   const [error, setError] = createSignal("")
   const [results, setResults] = createSignal<Results | null>(null)
+  const [name, setName] = createSignal("")
+
+  const isMe = (person: string) =>
+    name().trim() !== "" && person.toLowerCase() === name().trim().toLowerCase()
+
+  // Display helper: shows the candidate's two teams, with the named
+  // person's own team on the first row and their name bolded (UI only,
+  // has no effect on the ballot).
+  const TeamsLine = (props: { id: number }) => {
+    const teams = () => {
+      const c = CANDIDATES.find((c) => c.id === props.id)!
+      return c.teamB.some(isMe) ? [c.teamB, c.teamA] : [c.teamA, c.teamB]
+    }
+    const Members = (p: { team: string[] }) => (
+      <span>
+        <For each={p.team}>
+          {(person, i) => (
+            <>
+              {i() > 0 && ", "}
+              <span class={isMe(person) ? "font-semibold text-black dark:text-white" : ""}>
+                {person}
+              </span>
+            </>
+          )}
+        </For>
+      </span>
+    )
+    return (
+      <div class="flex flex-col gap-0.5 text-sm">
+        <Members team={teams()[0]} />
+        <span class="opacity-50 text-xs">vs</span>
+        <Members team={teams()[1]} />
+      </div>
+    )
+  }
 
   onMount(() => {
     if (localStorage.getItem(STORAGE_KEY)) {
@@ -105,14 +125,26 @@ export default function TeamVote() {
 
   return (
     <div class="flex flex-col gap-6">
+      <label class="flex flex-wrap items-center gap-3 text-sm">
+        <span class="opacity-75">Your name (shows your team first in each candidate):</span>
+        <input
+          type="text"
+          value={name()}
+          onInput={(e) => setName(e.currentTarget.value)}
+          placeholder="e.g. Oscar"
+          class="px-2 py-1 bg-transparent border border-black/25 dark:border-white/25 rounded text-sm"
+        />
+      </label>
+
       <Show
         when={voted()}
         fallback={
           <>
             <p class="text-sm opacity-75">
-              Order the 10 team candidates from best (1st, 25 points) to worst
-              (10th, 1 point) using the arrows, then submit. Scoring follows F1
-              rules. Your ballot is anonymous.
+              Order the 14 team candidates from best to worst using the arrows,
+              then submit. Scoring follows F1 rules: 25 points for 1st, 18 for
+              2nd, down to 1 point for 10th; positions 11 to 14 score nothing.
+              Your ballot is anonymous.
             </p>
             <ul class="flex flex-col gap-2">
               <For each={order()}>

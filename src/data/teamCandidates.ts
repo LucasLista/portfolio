@@ -6,14 +6,18 @@ export type TeamCandidate = {
 }
 
 export const CANDIDATES: TeamCandidate[] = [
-  { id: 0, teamA: ["Lucas", "Jonathan", "Elias", "Jonas"], teamB: ["Oscar", "Viktor", "Nikolaj", "Christoffer"] },
-  { id: 1, teamA: ["Jonathan", "Elias", "Oscar", "Nikolaj"], teamB: ["Lucas", "Viktor", "Christoffer", "Jonas"] },
-  { id: 2, teamA: ["Lucas", "Jonathan", "Viktor", "Christoffer"], teamB: ["Elias", "Oscar", "Nikolaj", "Jonas"] },
-  { id: 3, teamA: ["Lucas", "Elias", "Oscar", "Nikolaj"], teamB: ["Jonathan", "Viktor", "Christoffer", "Jonas"] },
-  { id: 4, teamA: ["Jonathan", "Oscar", "Viktor", "Nikolaj"], teamB: ["Lucas", "Elias", "Christoffer", "Jonas"] },
-  { id: 5, teamA: ["Lucas", "Elias", "Viktor", "Jonas"], teamB: ["Jonathan", "Oscar", "Nikolaj", "Christoffer"] },
-  { id: 6, teamA: ["Jonathan", "Elias", "Viktor", "Christoffer"], teamB: ["Lucas", "Oscar", "Nikolaj", "Jonas"] },
-  { id: 7, teamA: ["Elias", "Oscar", "Viktor", "Nikolaj"], teamB: ["Lucas", "Jonathan", "Jonas", "Christoffer"] },
-  { id: 8, teamA: ["Lucas", "Oscar", "Viktor", "Nikolaj"], teamB: ["Jonathan", "Elias", "Christoffer", "Jonas"] },
-  { id: 9, teamA: ["Lucas", "Jonathan", "Oscar", "Nikolaj"], teamB: ["Elias", "Viktor", "Jonas", "Christoffer"] },
+  { id: 0, teamA: ["Oscar", "Nikolaj", "Lucas", "Jonathan"], teamB: ["Elias", "Viktor", "Jonas", "Christoffer"] },
+  { id: 1, teamA: ["Oscar", "Nikolaj", "Lucas", "Elias"], teamB: ["Jonathan", "Viktor", "Jonas", "Christoffer"] },
+  { id: 2, teamA: ["Oscar", "Nikolaj", "Lucas", "Viktor"], teamB: ["Jonathan", "Elias", "Jonas", "Christoffer"] },
+  { id: 3, teamA: ["Oscar", "Nikolaj", "Lucas", "Jonas"], teamB: ["Jonathan", "Elias", "Viktor", "Christoffer"] },
+  { id: 4, teamA: ["Oscar", "Nikolaj", "Lucas", "Christoffer"], teamB: ["Jonathan", "Elias", "Viktor", "Jonas"] },
+  { id: 5, teamA: ["Oscar", "Nikolaj", "Jonathan", "Elias"], teamB: ["Lucas", "Viktor", "Jonas", "Christoffer"] },
+  { id: 6, teamA: ["Oscar", "Nikolaj", "Jonathan", "Viktor"], teamB: ["Lucas", "Elias", "Jonas", "Christoffer"] },
+  { id: 7, teamA: ["Oscar", "Nikolaj", "Jonathan", "Jonas"], teamB: ["Lucas", "Elias", "Viktor", "Christoffer"] },
+  { id: 8, teamA: ["Oscar", "Nikolaj", "Jonathan", "Christoffer"], teamB: ["Lucas", "Elias", "Viktor", "Jonas"] },
+  { id: 9, teamA: ["Oscar", "Nikolaj", "Elias", "Viktor"], teamB: ["Lucas", "Jonathan", "Jonas", "Christoffer"] },
+  { id: 10, teamA: ["Oscar", "Nikolaj", "Elias", "Jonas"], teamB: ["Lucas", "Jonathan", "Viktor", "Christoffer"] },
+  { id: 11, teamA: ["Oscar", "Nikolaj", "Elias", "Christoffer"], teamB: ["Lucas", "Jonathan", "Viktor", "Jonas"] },
+  { id: 12, teamA: ["Oscar", "Nikolaj", "Viktor", "Jonas"], teamB: ["Lucas", "Jonathan", "Elias", "Christoffer"] },
+  { id: 13, teamA: ["Oscar", "Nikolaj", "Viktor", "Christoffer"], teamB: ["Lucas", "Jonathan", "Elias", "Jonas"] },
 ]

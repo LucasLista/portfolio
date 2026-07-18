@@ -2,9 +2,9 @@
 // binding; only requests that don't match an asset (like /api/*) reach this.
 
 const VOTES_NEEDED = 5;
-const NUM_CANDIDATES = 10;
-// F1 scoring: points awarded for positions 1 through 10.
-const POINTS = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
+const NUM_CANDIDATES = 14;
+// F1 scoring: points for positions 1 through 10, nothing below that.
+const POINTS = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1, 0, 0, 0, 0];
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -71,7 +71,7 @@ async function handleVote(request, env) {
     ranking.length === NUM_CANDIDATES &&
     [...ranking].sort((a, b) => a - b).every((v, i) => v === i);
   if (!valid) {
-    return json({ error: "Ranking must order all 10 candidates" }, 400);
+    return json({ error: `Ranking must order all ${NUM_CANDIDATES} candidates` }, 400);
   }
 
   const existing = await env.VOTES.list({ prefix: "ballot:" });
