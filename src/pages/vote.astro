@@ -1,7 +1,7 @@
 ---
 import PageLayout from "@layouts/PageLayout.astro"
 import TopLayout from "@layouts/TopLayout.astro"
-import BottomLayout from "@layouts/BottomLayout.astro"
+import Container from "@components/Container.astro"
 import TeamVote from "@components/TeamVote"
 ---
 
@@ -14,9 +14,11 @@ import TeamVote from "@components/TeamVote"
       <div class="mt-1">Pick and order your top 10 teams. One vote per person.</div>
     </div>
   </TopLayout>
-  <BottomLayout>
-    <div class="animate">
-      <TeamVote client:only="solid-js" />
-    </div>
-  </BottomLayout>
+  <div class="flex-1 py-5">
+    <Container size="2xl">
+      <div class="animate">
+        <TeamVote client:only="solid-js" />
+      </div>
+    </Container>
+  </div>
 </PageLayout>
