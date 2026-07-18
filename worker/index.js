@@ -1,10 +1,11 @@
 // API for the anonymous team vote. Static assets are served by the assets
 // binding; only requests that don't match an asset (like /api/*) reach this.
 
-const VOTES_NEEDED = 5;
-const NUM_CANDIDATES = 14;
+const VOTES_NEEDED = 8;
+const NUM_CANDIDATES = 30;
 // F1 scoring: points for positions 1 through 10, nothing below that.
-const POINTS = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1, 0, 0, 0, 0];
+const F1 = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
+const POINTS = Array.from({ length: NUM_CANDIDATES }, (_, i) => F1[i] ?? 0);
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {

@@ -2,8 +2,9 @@ import { createSignal, For, Show, onMount } from "solid-js"
 import { CANDIDATES } from "@data/teamCandidates"
 
 // F1 scoring: points for positions 1 through 10, nothing below that.
-const POINTS = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1, 0, 0, 0, 0]
-const STORAGE_KEY = "team-vote-submitted-v2"
+const F1 = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1]
+const POINTS = Array.from({ length: CANDIDATES.length }, (_, i) => F1[i] ?? 0)
+const STORAGE_KEY = "team-vote-submitted-v3"
 
 type CandidateTotal = {
   id: number
@@ -27,6 +28,39 @@ function shuffled<T>(arr: T[]): T[] {
   return out
 }
 
+function Team(props: { team: string[] }) {
+  return (
+    <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+      <For each={props.team}>
+        {(person) => (
+          <span class="flex items-center gap-1.5 text-sm">
+            <img
+              src={`/vote/${person.toLowerCase()}.jpg`}
+              alt={person}
+              width="24"
+              height="24"
+              loading="lazy"
+              class="size-6 rounded-full object-cover"
+            />
+            {person}
+          </span>
+        )}
+      </For>
+    </div>
+  )
+}
+
+function TeamsLine(props: { id: number }) {
+  const c = CANDIDATES.find((c) => c.id === props.id)!
+  return (
+    <div class="flex flex-col gap-1">
+      <Team team={c.teamA} />
+      <span class="opacity-50 text-xs">vs</span>
+      <Team team={c.teamB} />
+    </div>
+  )
+}
+
 export default function TeamVote() {
   // Start each voter with a random order to avoid biasing toward the top
   const [order, setOrder] = createSignal(shuffled(CANDIDATES.map((c) => c.id)))
@@ -34,41 +68,6 @@ export default function TeamVote() {
   const [busy, setBusy] = createSignal(false)
   const [error, setError] = createSignal("")
   const [results, setResults] = createSignal<Results | null>(null)
-  const [name, setName] = createSignal("")
-
-  const isMe = (person: string) =>
-    name().trim() !== "" && person.toLowerCase() === name().trim().toLowerCase()
-
-  // Display helper: shows the candidate's two teams, with the named
-  // person's own team on the first row and their name bolded (UI only,
-  // has no effect on the ballot).
-  const TeamsLine = (props: { id: number }) => {
-    const teams = () => {
-      const c = CANDIDATES.find((c) => c.id === props.id)!
-      return c.teamB.some(isMe) ? [c.teamB, c.teamA] : [c.teamA, c.teamB]
-    }
-    const Members = (p: { team: string[] }) => (
-      <span>
-        <For each={p.team}>
-          {(person, i) => (
-            <>
-              {i() > 0 && ", "}
-              <span class={isMe(person) ? "font-semibold text-black dark:text-white" : ""}>
-                {person}
-              </span>
-            </>
-          )}
-        </For>
-      </span>
-    )
-    return (
-      <div class="flex flex-col gap-0.5 text-sm">
-        <Members team={teams()[0]} />
-        <span class="opacity-50 text-xs">vs</span>
-        <Members team={teams()[1]} />
-      </div>
-    )
-  }
 
   onMount(() => {
     if (localStorage.getItem(STORAGE_KEY)) {
@@ -125,26 +124,15 @@ export default function TeamVote() {
 
   return (
     <div class="flex flex-col gap-6">
-      <label class="flex flex-wrap items-center gap-3 text-sm">
-        <span class="opacity-75">Your name (shows your team first in each candidate):</span>
-        <input
-          type="text"
-          value={name()}
-          onInput={(e) => setName(e.currentTarget.value)}
-          placeholder="e.g. Oscar"
-          class="px-2 py-1 bg-transparent border border-black/25 dark:border-white/25 rounded text-sm"
-        />
-      </label>
-
       <Show
         when={voted()}
         fallback={
           <>
             <p class="text-sm opacity-75">
-              Order the 14 team candidates from best to worst using the arrows,
-              then submit. Scoring follows F1 rules: 25 points for 1st, 18 for
-              2nd, down to 1 point for 10th; positions 11 to 14 score nothing.
-              Your ballot is anonymous.
+              Order the {CANDIDATES.length} team candidates from best to worst
+              using the arrows, then submit. Scoring follows F1 rules: 25
+              points for 1st, 18 for 2nd, down to 1 point for 10th; positions
+              below 10th score nothing. Your ballot is anonymous.
             </p>
             <ul class="flex flex-col gap-2">
               <For each={order()}>
