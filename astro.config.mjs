@@ -8,5 +8,11 @@ import solidJs from "@astrojs/solid-js"
 export default defineConfig({
   site: "https://lucasrgpedersen.com",
   output: "static",
-  integrations: [mdx(), sitemap(), solidJs(), tailwind({ applyBaseStyles: false })],
+  integrations: [
+    mdx(),
+    // Keep the unlisted voting page out of the sitemap
+    sitemap({ filter: (page) => !page.includes("/vote") }),
+    solidJs(),
+    tailwind({ applyBaseStyles: false }),
+  ],
 })

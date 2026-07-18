@@ -1,7 +1,16 @@
 {
   "name": "portfolio",
   "compatibility_date": "2026-07-04",
+  "main": "worker/index.js",
   "assets": {
     "directory": "./dist"
-  }
+  },
+  "kv_namespaces": [
+    {
+      "binding": "VOTES",
+      "id": "b4a917872fdd4c33a8c7e66985ff8e47"
+    }
+  ]
+  // RESET_TOKEN is a Worker secret (wrangler secret put RESET_TOKEN), not a
+  // var, so it stays out of this public repo. It guards POST /api/reset.
 }
