@@ -3,9 +3,9 @@
 
 const VOTES_NEEDED = 8;
 const NUM_CANDIDATES = 30;
-// F1 scoring: points for positions 1 through 10, nothing below that.
-const F1 = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
-const POINTS = Array.from({ length: NUM_CANDIDATES }, (_, i) => F1[i] ?? 0);
+// A ballot is an ordered top 10 of candidate ids; F1 points per position.
+const TOP_N = 10;
+const POINTS = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -30,7 +30,7 @@ function tally(ballots) {
     points: 0,
     // positions[p] = how many voters put this candidate in position p+1,
     // used for F1-style countback on ties
-    positions: Array(NUM_CANDIDATES).fill(0),
+    positions: Array(TOP_N).fill(0),
   }));
   for (const ranking of ballots) {
     ranking.forEach((candidateId, pos) => {
@@ -40,7 +40,7 @@ function tally(ballots) {
   }
   totals.sort((a, b) => {
     if (b.points !== a.points) return b.points - a.points;
-    for (let p = 0; p < NUM_CANDIDATES; p++) {
+    for (let p = 0; p < TOP_N; p++) {
       if (b.positions[p] !== a.positions[p]) return b.positions[p] - a.positions[p];
     }
     return a.id - b.id;
@@ -69,10 +69,11 @@ async function handleVote(request, env) {
 
   const valid =
     Array.isArray(ranking) &&
-    ranking.length === NUM_CANDIDATES &&
-    [...ranking].sort((a, b) => a - b).every((v, i) => v === i);
+    ranking.length === TOP_N &&
+    ranking.every((v) => Number.isInteger(v) && v >= 0 && v < NUM_CANDIDATES) &&
+    new Set(ranking).size === TOP_N;
   if (!valid) {
-    return json({ error: `Ranking must order all ${NUM_CANDIDATES} candidates` }, 400);
+    return json({ error: `Ranking must be a top ${TOP_N} of distinct candidates` }, 400);
   }
 
   const existing = await env.VOTES.list({ prefix: "ballot:" });

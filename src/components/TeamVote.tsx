@@ -1,10 +1,10 @@
 import { createSignal, For, Show, onMount } from "solid-js"
 import { CANDIDATES } from "@data/teamCandidates"
 
-// F1 scoring: points for positions 1 through 10, nothing below that.
-const F1 = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1]
-const POINTS = Array.from({ length: CANDIDATES.length }, (_, i) => F1[i] ?? 0)
-const STORAGE_KEY = "team-vote-submitted-v3"
+// A ballot is an ordered top 10; F1 points per position, the rest score 0.
+const TOP_N = 10
+const POINTS = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1]
+const STORAGE_KEY = "team-vote-submitted-v4"
 
 type CandidateTotal = {
   id: number
@@ -62,12 +62,16 @@ function TeamsLine(props: { id: number }) {
 }
 
 export default function TeamVote() {
-  // Start each voter with a random order to avoid biasing toward the top
-  const [order, setOrder] = createSignal(shuffled(CANDIDATES.map((c) => c.id)))
+  // Pool order is shuffled per visitor to avoid biasing toward the top
+  const [poolOrder] = createSignal(shuffled(CANDIDATES.map((c) => c.id)))
+  const [picked, setPicked] = createSignal<number[]>([])
+  const [dragId, setDragId] = createSignal<number | null>(null)
   const [voted, setVoted] = createSignal(false)
   const [busy, setBusy] = createSignal(false)
   const [error, setError] = createSignal("")
   const [results, setResults] = createSignal<Results | null>(null)
+
+  const pool = () => poolOrder().filter((id) => !picked().includes(id))
 
   onMount(() => {
     if (localStorage.getItem(STORAGE_KEY)) {
@@ -76,12 +80,26 @@ export default function TeamVote() {
     }
   })
 
+  // Insert id at slot index (removing it first if already picked).
+  // If the top 10 is full and a new team is inserted, the last one drops out.
+  const insertAt = (id: number, index: number) => {
+    const next = picked().filter((p) => p !== id)
+    next.splice(Math.min(index, next.length), 0, id)
+    setPicked(next.slice(0, TOP_N))
+  }
+
+  const addToEnd = (id: number) => {
+    if (picked().length < TOP_N) insertAt(id, picked().length)
+  }
+
+  const remove = (id: number) => setPicked(picked().filter((p) => p !== id))
+
   const move = (index: number, delta: number) => {
     const target = index + delta
-    if (target < 0 || target >= order().length) return
-    const next = [...order()]
+    if (target < 0 || target >= picked().length) return
+    const next = [...picked()]
     ;[next[index], next[target]] = [next[target], next[index]]
-    setOrder(next)
+    setPicked(next)
   }
 
   const submit = async () => {
@@ -91,7 +109,7 @@ export default function TeamVote() {
       const res = await fetch("/api/vote", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ ranking: order() }),
+        body: JSON.stringify({ ranking: picked() }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error ?? "Something went wrong")
@@ -129,49 +147,121 @@ export default function TeamVote() {
         fallback={
           <>
             <p class="text-sm opacity-75">
-              Order the {CANDIDATES.length} team candidates from best to worst
-              using the arrows, then submit. Scoring follows F1 rules: 25
-              points for 1st, 18 for 2nd, down to 1 point for 10th; positions
-              below 10th score nothing. Your ballot is anonymous.
+              Build your top {TOP_N}: drag teams from the box below onto a
+              slot, or tap a team to add it to the next free slot. Scoring
+              follows F1 rules: 25 points for 1st down to 1 point for 10th;
+              teams left in the box score nothing. Your ballot is anonymous.
             </p>
-            <ul class="flex flex-col gap-2">
-              <For each={order()}>
-                {(id, index) => (
-                  <li class="flex items-center gap-4 p-3 border border-black/15 dark:border-white/20 rounded">
-                    <div class="w-14 shrink-0 text-center">
-                      <div class="text-lg font-semibold text-black dark:text-white">
-                        {index() + 1}.
+
+            <div class="flex flex-col gap-2">
+              <h2 class="text-lg font-semibold text-black dark:text-white">
+                Your top {TOP_N}
+              </h2>
+              <ol class="flex flex-col gap-2">
+                <For each={Array.from({ length: TOP_N })}>
+                  {(_, slot) => (
+                    <li
+                      class="flex items-center gap-4 p-3 border rounded border-black/15 dark:border-white/20"
+                      classList={{
+                        "border-dashed opacity-70": picked()[slot()] === undefined,
+                      }}
+                      onDragOver={(e) => e.preventDefault()}
+                      onDrop={(e) => {
+                        e.preventDefault()
+                        const id = dragId()
+                        if (id !== null) insertAt(id, slot())
+                        setDragId(null)
+                      }}
+                    >
+                      <div class="w-14 shrink-0 text-center">
+                        <div class="text-lg font-semibold text-black dark:text-white">
+                          {slot() + 1}.
+                        </div>
+                        <div class="text-xs opacity-60">{POINTS[slot()]} pts</div>
                       </div>
-                      <div class="text-xs opacity-60">{POINTS[index()]} pts</div>
-                    </div>
-                    <div class="flex-1">
-                      <TeamsLine id={id} />
-                    </div>
-                    <div class="flex flex-col gap-1">
-                      <button
-                        class={btn}
-                        disabled={index() === 0}
-                        onClick={() => move(index(), -1)}
-                        aria-label="Move up"
+                      <Show
+                        when={picked()[slot()] !== undefined}
+                        fallback={<div class="flex-1 text-sm opacity-50">Drop a team here</div>}
                       >
-                        &uarr;
-                      </button>
-                      <button
-                        class={btn}
-                        disabled={index() === order().length - 1}
-                        onClick={() => move(index(), 1)}
-                        aria-label="Move down"
-                      >
-                        &darr;
-                      </button>
-                    </div>
-                  </li>
-                )}
-              </For>
-            </ul>
-            <button class={btn + " self-start px-4 py-2"} disabled={busy()} onClick={submit}>
-              {busy() ? "Submitting..." : "Submit vote"}
+                        <div
+                          class="flex-1 cursor-grab"
+                          draggable={true}
+                          onDragStart={() => setDragId(picked()[slot()])}
+                        >
+                          <TeamsLine id={picked()[slot()]} />
+                        </div>
+                        <div class="flex flex-col gap-1">
+                          <button
+                            class={btn}
+                            disabled={slot() === 0}
+                            onClick={() => move(slot(), -1)}
+                            aria-label="Move up"
+                          >
+                            &uarr;
+                          </button>
+                          <button
+                            class={btn}
+                            disabled={slot() === picked().length - 1}
+                            onClick={() => move(slot(), 1)}
+                            aria-label="Move down"
+                          >
+                            &darr;
+                          </button>
+                        </div>
+                        <button
+                          class={btn}
+                          onClick={() => remove(picked()[slot()])}
+                          aria-label="Remove from top 10"
+                        >
+                          &times;
+                        </button>
+                      </Show>
+                    </li>
+                  )}
+                </For>
+              </ol>
+            </div>
+
+            <button
+              class={btn + " self-start px-4 py-2"}
+              disabled={busy() || picked().length !== TOP_N}
+              onClick={submit}
+            >
+              {busy()
+                ? "Submitting..."
+                : picked().length !== TOP_N
+                  ? `Pick ${TOP_N - picked().length} more`
+                  : "Submit vote"}
             </button>
+
+            <div
+              class="flex flex-col gap-2 p-3 border border-black/25 dark:border-white/25 rounded"
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                e.preventDefault()
+                const id = dragId()
+                if (id !== null) remove(id)
+                setDragId(null)
+              }}
+            >
+              <h2 class="text-lg font-semibold text-black dark:text-white">
+                All teams ({pool().length} left)
+              </h2>
+              <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <For each={pool()}>
+                  {(id) => (
+                    <li
+                      class="p-2 border border-black/15 dark:border-white/20 rounded cursor-grab hover:bg-black/5 dark:hover:bg-white/10 blend"
+                      draggable={true}
+                      onDragStart={() => setDragId(id)}
+                      onClick={() => addToEnd(id)}
+                    >
+                      <TeamsLine id={id} />
+                    </li>
+                  )}
+                </For>
+              </ul>
+            </div>
           </>
         }
       >
